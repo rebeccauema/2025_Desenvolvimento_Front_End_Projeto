@@ -1,7 +1,8 @@
 const protocolo = 'http://'
 const baseURL = 'localhost:3000'
-const filmesEndpoint = '/filmes'
+
 async function obterFilmes() {
+    const filmesEndpoint = '/filmes'
     const URLCompleta = `${protocolo}${baseURL}${filmesEndpoint}`
     const filmes = (await axios.get(URLCompleta)).data
     let tabela = document.querySelector('.filmes')
@@ -18,6 +19,7 @@ async function obterFilmes() {
     }
 }
 async function cadastrarFilme() {
+    const filmesEndpoint = '/filmes'
     //constrói a URL completa
     const URLCompleta = `${protocolo}${baseURL}${filmesEndpoint}`
     //pega os inputs que contém os valores que o usuário digitou
@@ -47,6 +49,8 @@ async function cadastrarFilme() {
             celulaTitulo.innerHTML = filme.titulo
             celulaSinopse.innerHTML = filme.sinopse
         }
+        exibirAlerta('.alert-filme', 'Filme cadastrado com sucesso', ['show',
+            'alert-success'], ['d-none'], 2000)
     }
     //senão, exibe o alerta por até 2 segundos
     else {
@@ -58,4 +62,39 @@ async function cadastrarFilme() {
             alert.classList.add('d-none')
         }, 2000)
     }
+}
+async function cadastrarUsuario() {
+    let usuarioCadastroInput = document.querySelector('#usuarioCadastroInput')
+    let passwordCadastroInput =
+        document.querySelector('#passwordCadastroInput')
+    let usuarioCadastro = usuarioCadastroInput.value
+    let passwordCadastro = passwordCadastroInput.value
+    if (usuarioCadastro && passwordCadastro) {
+        try {
+            const cadastroEndpoint = '/signup'
+            const URLCompleta = `${protocolo}${baseURL}${cadastroEndpoint}`
+            await axios.post(URLCompleta, {
+                login: usuarioCadastro, password:
+                    passwordCadastro
+            })
+            usuarioCadastroInput.value = ""
+            passwordCadastroInput.value = ""
+            exibirAlerta('.alert-modal-cadastro', "Usuário cadastrado com sucesso!", ['show', 'alert-success'], ['d-none', 'alert-danger'], 2000)
+        }
+        catch (error) {
+            exibirAlerta('.alert-modal-cadastro', "Erro ao cadastrar usuário",
+                ['show', 'alert-danger'], ['d-none', 'alert-success'], 2000)
+            ocultarModal('#modalLogin', 2000)
+        }
+    }
+    else {
+        exibirAlerta('.alert-modal-cadastro', 'Preencha todos os campos',
+            ['show', 'alert-danger'], ['d-none', 'alert-success'], 2000)
+    }
+}
+function ocultarModal(seletor, timeout) {
+    setTimeout(() => {
+        let modal = bootstrap.Modal.getInstance(document.querySelector(seletor))
+        modal.hide()
+    }, timeout)
 }
